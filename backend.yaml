@@ -2,6 +2,12 @@
   hosts: backend
   become: yes
   tasks:
+  - name: ansible to install pymsql
+    ansible.builtin.pip:
+      name:
+      - PyMySQL
+      executable: pip3.9 
+
   - name: disable default module nodejs
     ansible.builtin.command: dnf module disable nodejs -y
 
@@ -10,8 +16,11 @@
 
   - name: install nodejs
     ansible.builtin.package:
-      name: nodejs
+      name: "{{item}}"
       state: present
+    loop:
+    - nodejs
+    - mysql  
 
   - name: create expense user
     ansible.builtin.user:
@@ -31,4 +40,27 @@
     ansible.builtin.unarchive:
       src: /tmp/backend.zip #by default ansible thinks file is onli in ansible server
       dest: /app 
-      remote_src: yes          
+      remote_src: yes 
+
+  - name: install dependencies
+    ansible.builtin.command: npm install
+      args:
+        chdir: /app
+
+  - name: copy backend service 
+    ansible.builtin.copy: 
+      src: backend.service
+      dest: /etc/systemd/system/backend.service
+
+  - name: import mysql data
+    community.mysql.mysql_db:
+      login_user: root
+      login_password: "{{mysql_login_password}}"
+      login_host: "{{login_host}}"
+      target: /app/schema/backend.sql
+      name: all
+      state: dump 
+        
+
+
+
