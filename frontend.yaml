@@ -1,4 +1,4 @@
-- name: expense frontend configure
+- name: configure frontend server
   hosts: frontend
   become: yes
   tasks:
@@ -18,23 +18,27 @@
   - name: create html directory
     ansible.builtin.file:
       path: /usr/share/nginx/html
-      state: directory    
-  - name: download frontend code
-    ansible.builtin.get_url: 
+      state: directory
+
+  - name: download the frontend code
+    ansible.builtin.get_url:
       url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip
       dest: /tmp/frontend.zip
-  - name: extract code
+
+  - name: extract the code
     ansible.builtin.unarchive:
-      src: /tmp/frontend.zip
+      src: /tmp/frontend.zip #by default ansible thinks this is in ansible server
       dest: /usr/share/nginx/html
       remote_src: yes
+
   - name: copy expense conf
     ansible.builtin.copy:
       src: expense.conf
       dest: /etc/nginx/default.d/expense.conf
+
   - name: restart nginx
-    ansible.builtin.systemd_service:
+    ansible.builtin.service:
       name: nginx
-      state: restarted            
+      state: restarted           
 
              
