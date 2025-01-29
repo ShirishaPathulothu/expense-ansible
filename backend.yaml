@@ -62,7 +62,13 @@
       login_host: "{{login_host}}"
       target: /app/schema/backend.sql
       name: all
-      state: dump 
+      state: import
+
+  - name: start backend server
+    ansible.builtin.service:
+      name: backend
+      state: started
+      enabled: yes 
         
 
 
