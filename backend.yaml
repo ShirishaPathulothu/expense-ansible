@@ -1,6 +1,9 @@
 - name: configure backend server
   hosts: backend
   become: yes
+  vars:
+    mysql_login_password: ExpenseApp@1
+    login_host: mysql.dev12.shop
   tasks:
   - name: ansible to install pymsql
     ansible.builtin.pip:
