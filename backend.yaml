@@ -29,5 +29,6 @@
 
   - name: extract the code
     ansible.builtin.unarchive:
-      src: /tmp/backend.zip
-      dest: /app           
+      src: /tmp/backend.zip #by default ansible thinks file is onli in ansible server
+      dest: /app 
+      remote_src: yes          
